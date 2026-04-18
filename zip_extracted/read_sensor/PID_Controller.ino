@@ -97,10 +97,16 @@ void handleIntersection() {
     // T-intersection: no line ahead after crossing → turn right (default)
     lastDirection = RIGHT;
   } else if (sumOnSensor >= 12) {
-    // Thick stop marker OR dead end (Black Box) — stop the robot entirely
+    // Thick stop marker OR dead end — stop and signal
     stopMotors();
-    robotState = STATE_IDLE;
-    return;
+    // Blink display or serial — handled by updateDisplay
+    // Wait until cleared (with watchdog so we don't freeze forever)
+    unsigned long stopStart = millis();
+    while (sumOnSensor >= 12 && (millis() - stopStart < INTERSECTION_TIMEOUT_MS)) {
+      readSensors();
+    }
+    // If still saturated after watchdog, give up and go straight
+    lastDirection = STRAIGHT;
   } else {
     // Line visible after push-through → cross intersection, go straight
     lastDirection = STRAIGHT;

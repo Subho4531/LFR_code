@@ -186,15 +186,11 @@ void setup() {
     sensorThreshold[i] = 512;   // sane default before calibration
   }
 
-  // OLED - Ensure it has time to power up
-  delay(200); 
+  // OLED
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     // If OLED missing, continue anyway — don't hang
-    Serial.println(F("OLED missing"));
+    while (1) { delay(100); }
   }
-  
-  display.clearDisplay();
-  display.display();
   showStartScreen();
 }
 
